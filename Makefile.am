@@ -1,11 +1,13 @@
 DISTCHECK_CONFIGURE_FLAGS = \
 	--with-scriptdir=$$dc_install_base/lib/udev \
-	--with-rulesdir=$$dc_install_base/lib/udev/rules.d
+	--with-rulesdir=$$dc_install_base/lib/udev/rules.d \
+	--with-systemddir=$$dc_install_base/lib/systemd/system
 
 rules_DATA = 80-uam.rules
 script_DATA = uam-common.sh
 script_SCRIPTS = uam-mount.sh uam-umount.sh find-helper.sh
 bin_SCRIPTS = uam-pmount uam-pumount
+systemd_DATA = uam@.service
 
 dist_script_DATA = src/array.awk src/mounts.awk
 dist_conf_DATA = uam.conf
@@ -24,10 +26,10 @@ dist_ubhook_DATA = uam-hooks/pre-umount/00_filter_devices
 dist_mbhook_DATA = uam-hooks/pre-mount/00_filter_devices \
 	uam-hooks/pre-mount/00_wait_for_media
 
-EXTRA_DIST = 80-uam.rules.in \
+EXTRA_DIST = 80-uam.rules.in uam@.service.in \
 		src/uam-common.sh src/uam-mount.sh src/uam-umount.sh src/find-helper.sh \
 		src/uam-pmount src/uam-pumount
-CLEANFILES = $(rules_DATA) $(script_DATA) $(script_SCRIPTS) $(bin_SCRIPTS) .keep
+CLEANFILES = $(rules_DATA) $(script_DATA) $(script_SCRIPTS) $(bin_SCRIPTS) $(systemd_DATA) .keep
 
 $(rules_DATA): Makefile
 	rm -f $@ $@.tmp
@@ -54,6 +56,12 @@ $(script_DATA): Makefile
 	chmod a-w $@.tmp
 	mv $@.tmp $@
 
+$(systemd_DATA): Makefile
+	rm -f $@ $@.tmp
+	@SED@ -e "s|/lib/udev/uam|${scriptdir}|" ${srcdir}/$@.in > $@.tmp
+	chmod a-w $@.tmp
+	mv $@.tmp $@
+
 .keep:
 	touch $@
 
@@ -64,6 +72,7 @@ uam-umount.sh: src/uam-umount.sh
 find-helper.sh: src/find-helper.sh
 uam-pmount: src/uam-pmount
 uam-pumount: src/uam-pumount
+uam@.service: uam@.service.in
 
 EXTRA_DIST += NEWS
 NEWS: configure.ac Makefile.am

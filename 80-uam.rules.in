@@ -19,7 +19,7 @@ GOTO="uam_end"
 
 # The actual actions.
 LABEL="uam_actions"
-ACTION=="add", RUN+="/lib/udev/uam/uam-mount.sh"
+ACTION=="add", PROGRAM="/bin/systemd-escape -p --template=uam@.service $env{DEVNAME}", ENV{SYSTEMD_WANTS}+="$result"
 ACTION=="remove", RUN+="/lib/udev/uam/uam-umount.sh"
 ACTION=="change", ENV{DISK_MEDIA_CHANGE}=="1", RUN+="/lib/udev/uam/uam-mount.sh"
 ACTION=="change", ENV{DISK_EJECT_REQUEST}=="1", RUN+="/lib/udev/uam/uam-umount.sh"

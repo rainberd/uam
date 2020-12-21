@@ -12,3 +12,4 @@ Makefile.in
 /*.sh
 /uam-pmount
 /uam-pumount
+/uam@.service

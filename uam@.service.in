@@ -1,0 +1,11 @@
+[Unit]
+BindTo=%i.device
+After=%i.device
+
+[Service]
+Type=oneshot
+TimeoutStartSec=0
+Environment=DEVNAME=%I
+Environment=ACTION=add
+ExecStart=/lib/udev/uam/uam-mount.sh /%I
+RemainAfterExit=yes

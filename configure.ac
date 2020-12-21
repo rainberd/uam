@@ -35,11 +35,23 @@ AC_ARG_WITH([confdir],
 AC_ARG_WITH([hookdir],
 	AS_HELP_STRING([--with-hookdir=DIR], [the uam hook directory (CONFDIR/uam-hooks)]),
 	[], [with_hookdir=$with_confdir/uam-hooks])
+AC_ARG_WITH([systemddir],
+	AS_HELP_STRING([--with-systemddir=DIR], [the systemd system unit directory (LIBDIR/systemd/system)]),
+	[], [
+		AC_MSG_CHECKING([systemd system unit directory])
+		with_systemddir=`$PKG_CONFIG --variable=systemdsystemunitdir systemd`
+		AC_MSG_RESULT([with_systemddir])
+
+		AS_IF([test x"with_systemddir" = x""], [
+			AC_MSG_ERROR([unable to get systemd system unit directory from systemd.pc])
+		])
+	])
 
 AC_SUBST([rulesdir], [$with_rulesdir])
 AC_SUBST([scriptdir], [$with_scriptdir])
 AC_SUBST([confdir], [$with_confdir])
 AC_SUBST([hookdir], [$with_hookdir])
+AC_SUBST([systemddir], [$with_systemddir])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

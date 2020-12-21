@@ -137,7 +137,7 @@ summary() {
 env_populate() {
 	# udev already does this for us.
 	if ! under_udev; then
-		local __env ret
+		local __env ret __devpath
 		if [ -x /sbin/blkid ]; then
 			if [ -n "${1}" ]; then
 				__env=$(/sbin/blkid -c "${1}" -o udev "${DEVPATH}")
@@ -155,6 +155,13 @@ env_populate() {
 		else
 			return 1
 		fi
+
+		__devpath=${DEVPATH}
+		set a-
+		eval $(udevadm info --query=env --export ${DEVPATH} | awk '{ t=substr($0, length($0), 1); if("\\"==t || "'\''"==t) {print $0} else {print $0"\\"}}')
+		DEVPATH=${__devpath}	
+		set a+
+		unset DEVNAME
 	fi
 
 	# uam-specific variables
